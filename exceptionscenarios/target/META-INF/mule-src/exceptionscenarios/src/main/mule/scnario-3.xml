@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="exceptionscenariosFlow3" doc:id="53caade0-b43e-47cd-b23f-d8f48fffcc90" >
+		<http:listener doc:name="Listener" doc:id="c9f3d481-1487-46ba-9a80-84041b2f4de3" config-ref="HTTP_Listener_config" path="/scnario3">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<try doc:name="Try" doc:id="ef3a4e70-53f7-441f-b8ad-3e85bd295207" >
+			<validation:is-null doc:id="418c2de0-b679-4465-8233-bc330fa4768d" config-ref="Validation_Config" value="#[payload]"/>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="39a195b3-1c32-40e0-ac35-d1377183e6ef" >
+					<set-payload value='#["Error 1"]' doc:name="Error 1" doc:id="9c22f706-58d0-42bd-9ab0-8e4203c83d13" />
+				</on-error-continue>
+			
+</error-handler>
+		</try>
+		<set-payload value='#["End"]' doc:name="End" doc:id="1b388091-cb19-4c30-96d6-5190e18cc98e" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c56b34ce-ae04-4790-b4a0-f51c0ff2d7d4" >
+				<set-payload value='#["Error 2"]' doc:name="Error 2" doc:id="a973a90a-c83a-48fb-865b-7dd5d650130f" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	
+	</mule>

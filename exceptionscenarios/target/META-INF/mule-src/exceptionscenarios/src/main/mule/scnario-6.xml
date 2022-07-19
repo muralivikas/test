@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="scnario-4Flow6" doc:id="b64ee668-288c-4d8a-9b38-b8bcf2f14ad0" >
+		<http:listener doc:name="Listener" doc:id="70a933f2-2d1a-483a-93b4-f48855b9ad7a" config-ref="HTTP_Listener_config" path="/scnario6">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<flow-ref doc:name="Flow Reference" doc:id="76baaaf2-b3ba-460d-9659-d7c37da63ead" name="private6"/>
+		<set-payload value='#["Success main flow"]' doc:name='"Success main flow"' doc:id="959d809f-0ae5-47e9-8b25-4b7573ff3564" />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="74f5dbd3-ab28-4edb-a19a-73e9c1dc32ea" >
+				<set-payload value='#["Error main flow"]' doc:name='"Error main flow"' doc:id="6f2de38f-16cd-4e22-a842-0c18faca05d0" />
+			</on-error-propagate>
+		
+</error-handler>
+	</flow>
+	<flow name="private6" doc:id="d4e1aa67-60b4-49a1-9ee5-5d52809a34f9" >
+		<validation:is-number doc:name="Is number" doc:id="9c45de51-da4f-4b83-9bbc-ee437067008b" config-ref="Validation_Config" value="#[payload]" message="Payload is not number" numberType="INTEGER"/>
+		<error-handler>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ba5cb990-d27a-454c-ae6f-5190db881936" >
+				<set-payload value='#["Error from private flow"]' doc:name='"Error from private flow"' doc:id="79079370-7d5e-43b9-9fb0-d4d2a5efdbdb" />
+			</on-error-propagate>
+
+		</error-handler>
+	
+</flow>
+	</mule>

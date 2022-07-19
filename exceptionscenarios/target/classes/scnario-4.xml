@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="scnario-4Flow" doc:id="f6053318-0c60-466f-8947-8908b80a25fe" >
+		<http:listener doc:name="Listener" doc:id="8bf8244d-9338-40d3-9b7f-9fb19ae2655d" config-ref="HTTP_Listener_config" path="/scnario4">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<flow-ref doc:name="Flow Reference" doc:id="7fad04d2-125d-4a4e-a3a1-60757173ddfa" name="private"/>
+		<set-payload value='#["Success main flow"]' doc:name='"Success main flow"' doc:id="ba5eb70f-b5b9-48e8-ac12-7d05f18a8939" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7b0793b0-43f0-4dbc-98d7-552766583b14" >
+				<set-payload value='#["Error main flow"]' doc:name='"Error main flow"' doc:id="179053d8-c82d-4206-a2e1-c2b90a276b17" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="private" doc:id="e080dc5a-77d0-441d-b2c4-47de2c345676" >
+		<validation:is-number doc:name="Is number" doc:id="26336645-9bdd-484d-b813-a80f146386b7" config-ref="Validation_Config" value="#[payload]" message="Payload is not number" numberType="INTEGER"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="12419864-6362-421c-9dc6-776e30b5f793" >
+				<set-payload value='#["Error Private Flow"]' doc:name='"Error Private Flow"' doc:id="84b9c48f-4c5e-4e50-be8a-9563366552ac" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

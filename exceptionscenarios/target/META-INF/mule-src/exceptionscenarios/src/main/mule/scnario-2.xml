@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	
+	<flow name="exceptionscenariosFlow2" doc:id="ca91baa2-17f3-4360-8a47-1794adf3108e" >
+		<http:listener doc:name="Listener" doc:id="0af6c720-0d25-4b4f-9dc4-1ffc94da07a0" config-ref="HTTP_Listener_config" path="/scnario2">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<try doc:name="Try" doc:id="1db78381-0f76-4bec-8e2b-e572d545cabe" >
+			<validation:is-null doc:id="704012d3-299d-4c8d-96d0-e3746098a19f" config-ref="Validation_Config" value="#[payload]" message="Null expected but not received"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="30b6dc9f-828a-4dc5-989c-1873b119b5f9" >
+					<set-payload value='#["Error 1"]' doc:name="Error 1" doc:id="68b067e9-ec52-4c5e-870c-e6fd4714ad7e" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<set-payload value='#["End"]' doc:name="End" doc:id="2786b09c-d228-47c7-a66d-0b25ca7f3264" />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ec30bb96-42ab-408b-929c-49725ca23737" >
+				<set-payload value='#["Error 2"]' doc:name="Error 2" doc:id="66fde737-6a45-40fd-80a8-9b72b779edf0" />
+			</on-error-propagate>
+		
+</error-handler>
+	</flow>
+	
+	</mule>
