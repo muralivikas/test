@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8cdb09b6-e242-43f4-acbc-ca96d9a5d062" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="86351221-6051-4cef-b120-93d82eb0d7e7" >
+		<db:my-sql-connection host="database-1.cwqcnhhy2wql.us-east-1.rds.amazonaws.com" port="3306" user="admin" password="murali670" database="customer_db" />
+	</db:config>
+	<flow name="onerrorFlow" doc:id="d5a525e2-160c-4e58-aa10-be600db0e31a" >
+		<http:listener doc:name="Listener" doc:id="5522ef8b-f448-4319-a940-da1e0afd0e07" config-ref="HTTP_Listener_config" path="/continue">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="8ecd8f0a-4157-4a69-91ae-7f6d56ac4cae" message="Request Received"/>
+		<try doc:name="Try" doc:id="6dabc764-c7f6-4a3f-b3bc-b33df444c60a" >
+			<db:insert doc:id="a0afacca-a36c-4e00-ada2-a7d3563fc957" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT into customer_db (id,name,email,address,telephone) values(:id,:name,:email,:address,:telephone)]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	id:payload.id,
+	name : payload.name,
+	email : payload.email,
+	address : payload.address,
+	telephone : payload.telephone
+}]]]></db:input-parameters>
+		</db:insert>
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="72b77baf-ad85-4f57-a366-4170703a78a1" >
+					<ee:transform doc:name="Transform Message" doc:id="4fd20f42-e674-4e84-9875-1ca576212b78" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv header = false
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<file:write doc:id="f0bb90aa-b5ca-4d32-a4a8-24c16dd03915" path="C:\Users\Murali Vikas\Documents\Mulesoft\Mule CSV\FailedOrder.csv" mode="APPEND" createParentDirectories="false"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="6583477d-e76c-4ebe-823d-a345e8f05fe8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA["Order Placed Successfully!"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
